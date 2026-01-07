@@ -1,0 +1,35 @@
+name: rfid_webview_app
+description: A Flutter app for RFID card scanning and WebView integration for NSAFE Android 13 devices
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # WebView
+  webview_flutter: ^4.4.2
+  
+  # HTTP requests
+  http: ^1.1.0
+  
+  # NFC/RFID
+  nfc_manager: ^3.3.0
+  
+  # Local storage
+  shared_preferences: ^2.2.2
+  
+  # Permissions (if needed)
+  permission_handler: ^11.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+

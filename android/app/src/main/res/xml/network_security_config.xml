@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Allow cleartext traffic for local network -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.185.151.222</domain>
+        <domain includeSubdomains="true">192.168.0.114</domain>
+        <domain includeSubdomains="true">192.168.0.0</domain>
+        <domain includeSubdomains="true">192.168.1.0</domain>
+        <domain includeSubdomains="true">192.168.2.0</domain>
+        <domain includeSubdomains="true">192.168.3.0</domain>
+        <domain includeSubdomains="true">192.168.4.0</domain>
+        <domain includeSubdomains="true">192.168.5.0</domain>
+        <domain includeSubdomains="true">192.168.6.0</domain>
+        <domain includeSubdomains="true">192.168.7.0</domain>
+        <domain includeSubdomains="true">192.168.8.0</domain>
+        <domain includeSubdomains="true">192.168.9.0</domain>
+        <domain includeSubdomains="true">10.0.0.0</domain>
+        <domain includeSubdomains="true">172.16.0.0</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+    </domain-config>
+    
+    <!-- Default: HTTPS only for external domains -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
+
