@@ -27,26 +27,31 @@ class _HomeWebViewScreenState extends State<HomeWebViewScreen> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.white)
       ..enableZoom(true)
+      ..setUserAgent('Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36')
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
+            print('[HomeWebView] 📄 Page started loading: $url');
             setState(() {
               _isLoading = true;
               _errorMessage = null;
             });
           },
           onPageFinished: (String url) {
+            print('[HomeWebView] ✅ Page finished loading: $url');
             setState(() {
               _isLoading = false;
             });
           },
           onWebResourceError: (WebResourceError error) {
+            print('[HomeWebView] ❌ Web resource error: ${error.description} (${error.errorCode})');
             setState(() {
               _isLoading = false;
               _errorMessage = 'Error loading page: ${error.description}';
             });
           },
           onNavigationRequest: (NavigationRequest request) {
+            print('[HomeWebView] 🔄 Navigation request: ${request.url}');
             // Keep navigation inside the WebView
             return NavigationDecision.navigate;
           },

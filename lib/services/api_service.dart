@@ -81,5 +81,46 @@ class ApiService {
     print('[ApiService] loaded session cookie from storage: ${cookie ?? 'null'}');
     return cookie;
   }
+
+  /// Assign card to user. POST /api/userCards/assign
+  /// Request: { "userId": 123, "cardUid": "A1B2C3D4" }
+  /// Response: { "success": true, "message": "...", "data": {...} }
+  static Future<Map<String, dynamic>?> assignUserCard(int userId, String cardUid) async {
+    try {
+      final body = <String, dynamic>{
+        'userId': userId,
+        'cardUid': cardUid,
+      };
+      print('[ApiService] -> POST ${Constants.userCardsAssignApiUrl} body: $body');
+
+      final response = await http
+          .post(
+            Uri.parse(Constants.userCardsAssignApiUrl),
+            headers: const {'Content-Type': 'application/json'},
+            body: jsonEncode(body),
+          )
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              print('[ApiService] !! assignUserCard TIMEOUT after 10s');
+              throw Exception('Request timeout');
+            },
+          );
+
+      print('[ApiService] <- status: ${response.statusCode} body: ${response.body}');
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        print('[ApiService] assignUserCard SUCCESS: $data');
+        return data;
+      }
+      print('[ApiService] assignUserCard FAILED: ${response.body}');
+      return null;
+    } catch (e, stack) {
+      print('[ApiService] assignUserCard ERROR: $e');
+      print('[ApiService] StackTrace: $stack');
+      return null;
+    }
+  }
 }
 

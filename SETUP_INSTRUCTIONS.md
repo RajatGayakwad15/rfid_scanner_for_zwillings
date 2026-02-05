@@ -2,7 +2,7 @@
 
 ## Quick Start Guide
 
-Follow these steps to set up and build the RFID WebView App for Android 13.
+Follow these steps to set up and build the Zwillinglabs  for Android 13.
 
 ---
 

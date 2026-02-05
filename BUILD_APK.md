@@ -1,5 +1,7 @@
 # Build APK - Exact Commands
 
+**Package name:** `com.zwillinglabs.nsafe` (for clean install on NSAFE devices)
+
 ## Step-by-Step Commands to Build APK
 
 ### 1. Open Terminal/Command Prompt
@@ -8,9 +10,16 @@ Navigate to your project directory:
 cd D:\13
 ```
 
-### 2. Clean Previous Builds (Recommended)
+### 2. Clean Previous Builds (Required for clean install / package change)
 ```bash
 flutter clean
+```
+
+Then clean Android build cache:
+```bash
+cd android
+gradlew clean
+cd ..
 ```
 
 ### 3. Get Dependencies
@@ -31,11 +40,14 @@ D:\13\build\app\outputs\flutter-apk\app-release.apk
 
 ---
 
-## Complete Command Sequence (Copy & Paste)
+## Complete Command Sequence (Copy & Paste) – Clean + Rebuild Release
 
 ```bash
 cd D:\13
 flutter clean
+cd android
+gradlew clean
+cd ..
 flutter pub get
 flutter build apk --release --no-tree-shake-icons
 ```

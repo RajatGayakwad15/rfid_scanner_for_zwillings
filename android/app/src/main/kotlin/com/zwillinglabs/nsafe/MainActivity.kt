@@ -1,7 +1,6 @@
-package com.zwillinglabs.rfid_webview_app
+package com.zwillinglabs.nsafe
 
 import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity: FlutterActivity() {
 }
-

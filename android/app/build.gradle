@@ -31,7 +31,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "com.zwillinglabs.rfid_webview_app"
+    namespace "com.zwillinglabs.nsafe"
     compileSdk 36
     ndkVersion flutter.ndkVersion
 
@@ -50,7 +50,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.zwillinglabs.rfid_webview_app"
+        applicationId "com.zwillinglabs.nsafe"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()

@@ -14,7 +14,7 @@
         android:required="false" />
 
     <application
-        android:label="RFID WebView App"
+        android:label="Zwilling Labs"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true"
