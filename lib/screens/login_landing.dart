@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 import '../widgets/zwilling_logo.dart';
+import '../services/api_service.dart';
 import 'login_webview.dart';
 import 'register_screen.dart';
 
@@ -10,14 +11,25 @@ import 'register_screen.dart';
 class LoginLandingScreen extends StatelessWidget {
   const LoginLandingScreen({super.key});
 
-  void _onRegisterPressed(BuildContext context) {
+  Future<void> _onRegisterPressed(BuildContext context) async {
     final controller = TextEditingController();
     String? error;
+    bool obscure = true;
 
     showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (context, setDialogState) {
+          Future<void> validateAndSubmit() async {
+            final typed = controller.text.trim();
+            final currentPassword = await ApiService.getRegisterPassword();
+            if (typed == currentPassword) {
+              if (ctx.mounted) Navigator.pop(ctx, true);
+            } else {
+              setDialogState(() => error = 'Wrong password');
+            }
+          }
+
           return AlertDialog(
             title: const Text('Register', style: TextStyle(fontWeight: FontWeight.bold)),
             content: Column(
@@ -28,18 +40,22 @@ class LoginLandingScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 TextField(
                   controller: controller,
-                  obscureText: true,
-                  decoration: const InputDecoration(
+                  obscureText: obscure,
+                  decoration: InputDecoration(
                     labelText: 'Password',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: controller.text.trim().isEmpty
+                        ? null
+                        : IconButton(
+                            tooltip: obscure ? 'Show password' : 'Hide password',
+                            icon: Icon(obscure ? Icons.visibility : Icons.visibility_off),
+                            onPressed: () => setDialogState(() => obscure = !obscure),
+                          ),
                   ),
-                  onSubmitted: (_) {
-                    if (controller.text == Constants.registerPassword) {
-                      Navigator.pop(ctx, true);
-                    } else {
-                      setDialogState(() => error = 'Wrong password');
-                    }
-                  },
+                  onChanged: (_) => setDialogState(() {
+                    error = null;
+                  }),
+                  onSubmitted: (_) => validateAndSubmit(),
                 ),
                 if (error != null) ...[
                   const SizedBox(height: 8),
@@ -55,14 +71,107 @@ class LoginLandingScreen extends StatelessWidget {
                 onPressed: () => Navigator.pop(ctx, false),
                 child: const Text('Cancel'),
               ),
+              if (controller.text.trim().isNotEmpty)
+                TextButton(
+                  onPressed: () async {
+                    final typed = controller.text.trim();
+                    final currentPassword = await ApiService.getRegisterPassword();
+                    if (typed != currentPassword) {
+                      setDialogState(() => error = 'Enter correct current password first');
+                      return;
+                    }
+
+                    final newController = TextEditingController();
+                    bool newObscure = true;
+                    String? changeError;
+
+                    final changed = await showDialog<bool>(
+                      context: ctx,
+                      builder: (changeCtx) => StatefulBuilder(
+                        builder: (context, setChangeState) {
+                          return AlertDialog(
+                            title: const Text('Change Password',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const Text('Enter a new password:'),
+                                const SizedBox(height: 12),
+                                TextField(
+                                  controller: newController,
+                                  obscureText: newObscure,
+                                  decoration: InputDecoration(
+                                    labelText: 'New password',
+                                    border: const OutlineInputBorder(),
+                                    suffixIcon: newController.text.trim().isEmpty
+                                        ? null
+                                        : IconButton(
+                                            tooltip: newObscure
+                                                ? 'Show password'
+                                                : 'Hide password',
+                                            icon: Icon(newObscure
+                                                ? Icons.visibility
+                                                : Icons.visibility_off),
+                                            onPressed: () => setChangeState(
+                                                () => newObscure = !newObscure),
+                                          ),
+                                  ),
+                                  onChanged: (_) => setChangeState(() {
+                                    changeError = null;
+                                  }),
+                                ),
+                                if (changeError != null) ...[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    changeError!,
+                                    style: const TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(changeCtx, false),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  final newPassword = newController.text.trim();
+                                  if (newPassword.isEmpty) {
+                                    setChangeState(() =>
+                                        changeError = 'New password can’t be empty');
+                                    return;
+                                  }
+                                  await ApiService.setRegisterPassword(newPassword);
+                                  if (changeCtx.mounted) {
+                                    Navigator.pop(changeCtx, true);
+                                  }
+                                },
+                                child: const Text('Save',
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    );
+
+                    if (changed == true && ctx.mounted) {
+                      setDialogState(() {
+                        controller.clear();
+                        obscure = true;
+                        error = 'Password changed. Please enter new password.';
+                      });
+                    }
+                  },
+                  child: const Text('Change Password',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
               TextButton(
-                onPressed: () {
-                  if (controller.text == Constants.registerPassword) {
-                    Navigator.pop(ctx, true);
-                  } else {
-                    setDialogState(() => error = 'Wrong password');
-                  }
-                },
+                onPressed: () => validateAndSubmit(),
                 child: const Text('Submit', style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ],

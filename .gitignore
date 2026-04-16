@@ -8,6 +8,9 @@
 .buildlog/
 .history
 .svn/
+
+# Android / Kotlin transient files
+android/.kotlin/
 migrate_working_dir/
 
 # IntelliJ related

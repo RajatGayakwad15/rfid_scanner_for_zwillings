@@ -1,10 +1,28 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../utils/constants.dart';
 
 /// Service for handling API calls
 class ApiService {
+  static const FlutterSecureStorage _secure = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
+
+  static Future<String> getRegisterPassword() async {
+    final stored = await _secure.read(key: Constants.registerPasswordKey);
+    return (stored == null || stored.trim().isEmpty)
+        ? Constants.defaultRegisterPassword
+        : stored;
+  }
+
+  static Future<void> setRegisterPassword(String newPassword) async {
+    final trimmed = newPassword.trim();
+    if (trimmed.isEmpty) return;
+    await _secure.write(key: Constants.registerPasswordKey, value: trimmed);
+  }
+
   /// Login with RFID card UID.
   /// Logs full request/response so you can see it in `flutter run` / Logcat
   /// and stores the session cookie from the `Set-Cookie` header.
@@ -48,8 +66,7 @@ class ApiService {
             final value = match.group(2)!.trim();
             final fullCookie = '$name=$value';
 
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString(Constants.sessionCookieKey, fullCookie);
+            await _secure.write(key: Constants.sessionCookieKey, value: fullCookie);
             print('[ApiService] saved session cookie: $fullCookie');
           } else {
             print(
@@ -76,8 +93,7 @@ class ApiService {
   
   /// Get stored session cookie (also logged so you can verify it).
   static Future<String?> getSessionCookie() async {
-    final prefs = await SharedPreferences.getInstance();
-    final cookie = prefs.getString(Constants.sessionCookieKey);
+    final cookie = await _secure.read(key: Constants.sessionCookieKey);
     print('[ApiService] loaded session cookie from storage: ${cookie ?? 'null'}');
     return cookie;
   }

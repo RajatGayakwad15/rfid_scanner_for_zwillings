@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../utils/constants.dart';
+import '../utils/webview_settings.dart';
 import '../services/api_service.dart';
 
 /// Home screen with WebView showing order list
@@ -26,7 +27,7 @@ class _HomeWebViewScreenState extends State<HomeWebViewScreen> {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.white)
-      ..enableZoom(true)
+      ..enableZoom(false)
       ..setUserAgent('Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36')
       ..setNavigationDelegate(
         NavigationDelegate(
@@ -57,6 +58,8 @@ class _HomeWebViewScreenState extends State<HomeWebViewScreen> {
           },
         ),
       );
+
+    await applyAndroidWebViewSettings(_controller);
 
     // Attach session cookie (if any) to WebView cookie store, then load order list
     final sessionCookie = await ApiService.getSessionCookie();

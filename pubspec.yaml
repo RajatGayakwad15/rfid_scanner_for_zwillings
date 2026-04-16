@@ -21,6 +21,9 @@ dependencies:
   
   # Local storage
   shared_preferences: ^2.2.2
+
+  # Secure local storage (encrypted)
+  flutter_secure_storage: ^9.2.4
   
   # Permissions (if needed)
   permission_handler: ^11.1.0

@@ -431,6 +431,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../utils/constants.dart';
+import '../utils/webview_settings.dart';
 import 'home_webview.dart';
 import 'login_landing.dart';
 
@@ -489,11 +490,11 @@ class _LoginWebViewScreenState extends State<LoginWebViewScreen> {
     );
   }
 
-  void _initializeWebView() {
+  Future<void> _initializeWebView() async {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.white)
-      ..enableZoom(true)
+      ..enableZoom(false)
       ..setUserAgent(
           'Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36')
       ..addJavaScriptChannel(
@@ -531,7 +532,7 @@ class _LoginWebViewScreenState extends State<LoginWebViewScreen> {
             });
           },
           onNavigationRequest: (request) {
-            if (request.url.contains('/list/process') ||
+            if (request.url.contains('/orderlist') ||
                 request.url == Constants.orderListUrl) {
               _onLoginSuccess();
               return NavigationDecision.prevent;
@@ -541,13 +542,14 @@ class _LoginWebViewScreenState extends State<LoginWebViewScreen> {
         ),
       );
 
+    await applyAndroidWebViewSettings(_controller);
     _controller.loadRequest(Uri.parse(Constants.loginUrl));
   }
 
   void _checkLoginSuccess(String url) {
-    if (url.contains('/list/process') ||
+    if (url.contains('orderlist') ||
         url == Constants.orderListUrl ||
-        url.contains('list/process')) {
+        url.contains('orderlist')) {
       Future.delayed(const Duration(milliseconds: 300), _onLoginSuccess);
     }
   }
